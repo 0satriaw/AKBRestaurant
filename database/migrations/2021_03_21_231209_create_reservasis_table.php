@@ -25,6 +25,7 @@ class CreateReservasisTable extends Migration
             $table->unsignedBigInteger('id_pegawai');
             $table->foreign('id_pegawai')->references('id')->on('users');
 
+            $table->string('kode_qr');
             $table->date('tanggal_kunjungan');
             $table->time('jam_kunjungan');
             $table->integer('sesi');

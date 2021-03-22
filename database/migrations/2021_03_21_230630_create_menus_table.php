@@ -23,6 +23,7 @@ class CreateMenusTable extends Migration
             $table->string('deskripsi');
             $table->string('unit');
             $table->string('tipe');
+            $table->integer('stok');
             $table->double('harga');
             $table->integer('serving_size');
             $table->string('gambar');

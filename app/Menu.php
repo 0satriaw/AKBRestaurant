@@ -11,6 +11,7 @@ class Menu extends Model
         'deskripsi',
         'unit',
         'tipe',
+        'stok',
         'harga',
         'serving_size',
         'gambar',
