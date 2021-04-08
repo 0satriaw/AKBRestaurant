@@ -17,7 +17,7 @@ class CreateKartusTable extends Migration
             $table->id();
             $table->string('tipe_kartu');
             $table->string('nomor_kartu');
-            $table->string('nama_pemilik');
+            $table->string('nama_pemilik')->nullable();
             $table->date('exp_date');
             $table->timestamps();
         });

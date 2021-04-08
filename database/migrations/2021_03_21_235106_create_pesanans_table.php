@@ -25,9 +25,10 @@ class CreatePesanansTable extends Migration
             $table->unsignedBigInteger('id_menu');
             $table->foreign('id_menu')->references('id')->on('menus');
 
-            $table->integer('status_pesanan');
             $table->integer('jumlah');
             $table->double('total_harga');
+            $table->integer('status_pesanan');
+            $table->datetime('tanggal_pesanan');
             $table->timestamps();
         });
     }
