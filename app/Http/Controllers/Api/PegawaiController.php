@@ -38,7 +38,7 @@ class PegawaiController extends Controller
             'password'=>'required',
             'jenis_kelamin'=>'required',
             'no_telp'=>'required|numeric|digits_between:10,13|starts_with:08',
-            'tanggal_bergabung'=>'date',
+            'tanggal_bergabung'=>'date|required',
             'status'=>'required'
         ]);
 
@@ -47,7 +47,7 @@ class PegawaiController extends Controller
 
         $registrationData['password'] = bcrypt($request->password); //enkripsi password
 
-        $user = User::create($registrationData)->sendApiEmailVerificationNotification();
+        $user = User::create($registrationData);
 
         return response([
             'message'=>'Register Success',

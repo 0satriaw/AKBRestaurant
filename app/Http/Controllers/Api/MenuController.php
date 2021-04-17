@@ -10,6 +10,7 @@ use App\Menu;
 
 class MenuController extends Controller
 {
+    // =======================================MENU BELUM ADA ID BAHAN============================================
     public function index(){
         $menu = Menu::all();
 
@@ -50,6 +51,7 @@ class MenuController extends Controller
         $storeData = $request->all();
         $validate = Validator::make($storeData,[
             'nama_menu' => 'required|max:60|unique:menu',
+            'id_bahan'=>'required|numeric',
             'deskripsi' => 'required|max:255',
             'unit' => 'required|max:255',
             'tipe' => 'required|max:255',

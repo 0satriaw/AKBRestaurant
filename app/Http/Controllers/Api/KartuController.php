@@ -50,7 +50,7 @@ class KartuController extends Controller
             'tipe_kartu' => 'required|max:255',
             'nomor_kartu' => 'required|numeric',
             'nama_pemilik' => 'string|nullable',
-            'exp_date' => 'required'
+            'exp_date' => 'nullable|date'
         ]);
 
         if($validate->fails())

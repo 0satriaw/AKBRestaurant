@@ -105,7 +105,7 @@ class MejaController extends Controller
 
 
             $meja->status =  $updateData['status'];
-            $meja->nomor_meja = $updateData['status_hapus'];
+            $meja->nomor_meja = $updateData['nomor_meja'];
 
         if($meja->save()){
             return response([
