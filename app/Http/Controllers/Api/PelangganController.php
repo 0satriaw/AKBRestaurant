@@ -7,11 +7,12 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Validator;
 use App\Pelanggan;
+use DB;
 
 class PelangganController extends Controller
 {
     public function index(){
-        $pelanggan = Pelanggan::all();
+        $pelanggan = DB::Table('pelanggans')->where('status_hapus','=',0)->get();
 
         if(count($pelanggan)>0){
                 return response([

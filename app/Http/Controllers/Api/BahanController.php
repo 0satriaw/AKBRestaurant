@@ -7,11 +7,12 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Validator;
 use App\Bahan;
+use DB;
 
 class BahanController extends Controller
 {
     public function index(){
-        $bahan = Bahan::all();
+        $bahan = DB::Table('bahans')->where('status_hapus','=',0)->get();
 
         if(count($bahan)>0){
                 return response([

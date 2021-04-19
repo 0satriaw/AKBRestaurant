@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\User;
 use Validator;
+use Illuminate\Validation\Rule;
+use DB;
+use App\Jabatan;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 
@@ -14,7 +17,10 @@ class PegawaiController extends Controller
 {
     //show all
     public function index(){
-        $user = User::all();
+        $user = DB::table('users')
+            ->join('jabatans', 'users.id_jabatan', '=', 'jabatans.id')
+            ->select('users.id','users.nama', 'users.email', 'users.jenis_kelamin','users.no_telp','jabatans.nama_jabatan','users.tanggal_bergabung','users.status')
+            ->orderBy('users.status')->get();
 
         if(count($user)>0){
                 return response([
@@ -32,9 +38,12 @@ class PegawaiController extends Controller
     //create
     public function register(Request $request){
         $registrationData = $request->all();
+        $registrationData['tanggal_bergabung']= date('Y-m-d');
+
         $validate = Validator::make($registrationData,[
             'nama'=>'required|max:60',
             'email'=>'required|email:rfc,dns|unique:users',
+            'id_jabatan'=>'required|numeric',
             'password'=>'required',
             'jenis_kelamin'=>'required',
             'no_telp'=>'required|numeric|digits_between:10,13|starts_with:08',
@@ -88,7 +97,10 @@ class PegawaiController extends Controller
 
     //show using id
     public function show($id){
-        $user = User::find($id);
+        $user = DB::table('users')
+        ->join('jabatans', 'users.id_jabatan', '=', 'jabatans.id')
+        ->select('users.id','users.nama', 'users.email','users.jenis_kelamin','users.no_telp','jabatans.nama_jabatan','users.tanggal_bergabung','users.status')->where('users.id',$id)
+        ->get();
 
         if(!is_null($user)){
             return response([
@@ -117,9 +129,10 @@ class PegawaiController extends Controller
         //validate update blm
         $validate = Validator::make($updateData,[
             'nama'=>'required|max:60',
-            'email'=>'required|email:rfc,dns|unique:users',
+            'email'=>['email:rfc,dns',Rule::unique('users')->ignore($user)],
             'jenis_kelamin'=>'required',
             'no_telp'=>'required|numeric|digits_between:10,13|starts_with:08',
+            'id_jabatan'=>'required|numeric',
             'tanggal_bergabung'=>'date',
             'status'=>'required'
         ]);
@@ -131,6 +144,7 @@ class PegawaiController extends Controller
         $user->email = $updateData['email'];
         $user->no_telp = $updateData['no_telp'];
         $user->jenis_kelamin = $updateData['jenis_kelamin'];
+        $user->id_jabatan = $updateData['id_jabatan'];
         $user->tanggal_bergabung = $updateData['tanggal_bergabung'];
         $user->status = $updateData['status'];
 
@@ -143,6 +157,40 @@ class PegawaiController extends Controller
 
         return response([
             'message'=>'Update User Failed',
+            'data'=>null,
+        ],404);//return message saat user gagal diedit
+    }
+
+    public function sDestroy(Request $request, $id){
+        $user = User::find($id);
+
+        if(is_null($user)){
+            return response([
+                'message'=>'User Not Found',
+                'data'=>null
+            ],404);
+        }
+
+        $updateData = $request->all();
+        //validate update blm
+        $validate = Validator::make($updateData,[
+            'status'=>'required'
+        ]);
+
+        if($validate->fails())
+            return response(['message'=>$validate->errors()],404);//return error invalid input
+
+        $user->status = $updateData['status'];
+
+        if($user->save()){
+            return response([
+                'message'=>'Delete User Success',
+                'data'=>$user,
+            ],200);
+        }//return user yg telah diedit
+
+        return response([
+            'message'=>'Delete User Failed',
             'data'=>null,
         ],404);//return message saat user gagal diedit
     }

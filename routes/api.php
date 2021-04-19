@@ -26,7 +26,8 @@ Route::group(['middleware'=>'auth:api'],function(){
     Route::get('user/{id}','Api\PegawaiController@show');
     Route::post('user','Api\PegawaiController@register');
     Route::put('user/{id}','Api\PegawaiController@update');
-    Route::put('user/{id}','Api\PegawaiController@updatePassword');
+    Route::put('duser/{id}','Api\PegawaiController@sDestroy');
+    Route::put('updatepassword/{id}','Api\PegawaiController@updatePassword');
     Route::delete('user/{id}','Api\PegawaiController@destroy');
     Route::post('logout','Api\PegawaiController@logout');
 
@@ -35,7 +36,7 @@ Route::group(['middleware'=>'auth:api'],function(){
     Route::get('bahan/{id}','Api\BahanController@show');
     Route::post('bahan','Api\BahanController@store');
     Route::put('bahan/{id}','Api\BahanController@update');
-    Route::put('bahan/{id}','Api\BahanController@sDestroy');
+    Route::put('dbahan/{id}','Api\BahanController@sDestroy');
     Route::delete('bahan/{id}','Api\BahanController@destroy');
 
     //Jabatan
@@ -57,7 +58,7 @@ Route::group(['middleware'=>'auth:api'],function(){
     Route::get('meja/{id}','Api\MejaController@show');
     Route::post('meja','Api\MejaController@store');
     Route::put('meja/{id}','Api\MejaController@update');
-    Route::put('meja/{id}','Api\MejaController@sDestroy');
+    Route::put('dmeja/{id}','Api\MejaController@sDestroy');
     Route::delete('meja/{id}','Api\MejaController@destroy');
 
     //Pelanggan
@@ -65,7 +66,7 @@ Route::group(['middleware'=>'auth:api'],function(){
     Route::get('pelanggan/{id}','Api\PelangganController@show');
     Route::post('pelanggan','Api\PelangganController@store');
     Route::put('pelanggan/{id}','Api\PelangganController@update');
-    Route::put('pelanggan/{id}','Api\PelangganController@sDestroy');
+    Route::put('dpelanggan/{id}','Api\PelangganController@sDestroy');
     Route::delete('pelanggan/{id}','Api\PelangganController@destroy');
 
     //StokKeluar
@@ -85,7 +86,7 @@ Route::group(['middleware'=>'auth:api'],function(){
     Route::get('menu/{id}','Api\MenuController@show');
     Route::post('menu','Api\MenuController@store');
     Route::put('menu/{id}','Api\MenuController@update');
-    Route::put('menu/{id}','Api\MenuController@sDestroy');
+    Route::put('dmenu/{id}','Api\MenuController@sDestroy');
     Route::delete('menu/{id}','Api\MenuController@destroy');
     Route::post('menu/gambar/{id}', 'Api\MenuController@uploadGambar');
 
