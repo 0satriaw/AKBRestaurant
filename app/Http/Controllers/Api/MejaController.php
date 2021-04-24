@@ -7,11 +7,12 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Validator;
 use App\Meja;
+use DB;
 
 class MejaController extends Controller
 {
     public function index(){
-        $meja = Meja::all();
+        $meja = DB::Table('mejas')->where('status_hapus','=',0)->get();
 
         if(count($meja)>0){
                 return response([
@@ -48,7 +49,7 @@ class MejaController extends Controller
         $storeData = $request->all();
         $validate = Validator::make($storeData,[
             'status' => 'required|max:255',
-            'nomor_meja' => 'required|numeric',
+            'nomor_meja' => 'required|numeric|unique:mejas',
             'status_hapus' => 'required|numeric'
         ]);
 
@@ -96,16 +97,44 @@ class MejaController extends Controller
 
         $updateData = $request->all();
         $validate = Validator::make($updateData,[
-            'status' => 'required|max:255',
-            'nomor_meja' => 'required|numeric',
+            'nomor_meja' => ['numeric',Rule::unique('mejas')->ignore($meja)],
         ]);
 
         if($validate->fails())
             return response(['message'=> $validate->errors()],400);
 
-
-            $meja->status =  $updateData['status'];
             $meja->nomor_meja = $updateData['nomor_meja'];
+
+        if($meja->save()){
+            return response([
+                'message' => 'Update Meja Success',
+                'data'=> $meja,
+            ],200);
+        }
+
+        return response([
+            'messsage'=>'Update Meja Failed',
+            'data'=>null,
+        ],400);
+    }
+
+    public function updateKetersediaan($updateData, $id){
+        $meja = Meja::find($id);
+        if(is_null($meja)){
+            return response([
+                'message'=>'Meja Not Found',
+                'data'=>null
+            ],404);
+        }
+
+        $validate = Validator::make($updateData,[
+            'status' => 'required|string',
+        ]);
+
+        if($validate->fails())
+            return response(['message'=> $validate->errors()],400);
+
+            $meja->status = $updateData['status'];
 
         if($meja->save()){
             return response([

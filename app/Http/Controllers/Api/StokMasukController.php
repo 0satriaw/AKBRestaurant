@@ -14,7 +14,10 @@ class StokMasukController extends Controller
 {
   //Semua Stok Masuk tanpa terkecuali
     public function index(){
-        $stokmasuk = StokMasuk::all();
+        $stokmasuk = DB::table('stok_masuks')
+            ->join('bahans', 'bahans.id', '=', 'stok_masuks.id_bahan')
+            ->select('stok_masuks.*','bahans.nama_bahan')
+            ->get();
 
         if(count($stokmasuk)>0){
             return response([
@@ -64,10 +67,11 @@ class StokMasukController extends Controller
         ]);
 
         $bahan['stok'] = $bahan['stok'] + $storeData['jumlah'];
-        $menu['stok'] = $bahan['stok']/$menu['serving_size'];
-
         $bahan->save();
-        $menu->save();
+        if($menu!=null){
+            $menu['stok'] = $bahan['stok']/$menu['serving_size'];
+            $menu->save();
+        }
 
         if($validate->fails()){
             return response(['message'=>$validate->errors()],400);
@@ -76,7 +80,7 @@ class StokMasukController extends Controller
         $stokmasuk = StokMasuk::create($storeData);
 
         return response([
-            'message'=>'Add StokMasuk Success',
+            'message'=>'Add Stok Masuk Success',
             'data'=>$stokmasuk,
         ],200);
     }
@@ -137,20 +141,43 @@ class StokMasukController extends Controller
         if($validate->fails())
             return response(['message'=> $validate->errors()],400);
 
+        $bahanAwal = Bahan::where('id', $id_bahan)->first();
+        $bahanUpdate = Bahan::where('id', $updateData['id_bahan'])->first();
+
+
+            if($bahanAwal['id']==$bahanUpdate['id']){
+                $menuAwal = Menu::where('id_bahan', $id_bahan)->first();
+                $bahanAwal['stok'] = $bahanAwal['stok'] + $updateData['jumlah'] - $sMasukAwal;
+
+                if($menuAwal!=null){
+                    $menuAwal['stok'] = intdiv($bahanAwal['stok'],$menuAwal['serving_size']);
+                    $menuAwal->save();
+                }
+                $bahanAwal->save();
+            }else{
+                $menuAwal = Menu::where('id_bahan', $id_bahan)->first();
+                $menuBaru = Menu::where('id_bahan', $updateData['id_bahan'])->first();
+
+                $bahanAwal['stok'] = $bahanAwal['stok']-$sMasukAwal;
+                $bahanUpdate['stok'] = $bahanUpdate['stok'] + $updateData['jumlah'];
+
+
+                if($menuAwal!=null){
+                    $menuAwal['stok'] = intdiv($bahanAwal['stok'],$menuAwal['serving_size']);
+                    $menuAwal->save();
+                }
+                if($menuBaru!=null){
+                    $menuBaru['stok'] = intdiv($bahanUpdate['stok'],$menuBaru['serving_size']);
+                    $menuBaru->save();
+                }
+                $bahanAwal->save();
+                $bahanUpdate->save();
+            }
 
             $stokmasuk->id_bahan =  $updateData['id_bahan'];
             $stokmasuk->jumlah = $updateData['jumlah'];
             $stokmasuk->biaya = $updateData['biaya'];
             $stokmasuk->tanggal_masuk = $updateData['tanggal_masuk'];
-
-            $bahan = Bahan::where('id', $id_bahan)->first();
-            $menu = Menu::where('id_bahan', $id_bahan)->first();
-
-            $bahan['stok'] = $bahan['stok'] + $updateData['jumlah'] - $sMasukAwal;
-            $menu['stok'] = $bahan['stok']/$menu['serving_size'];
-
-            $bahan->save();
-            $menu->save();
 
         if($stokmasuk->save()){
             return response([

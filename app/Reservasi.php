@@ -9,10 +9,14 @@ use Carbon\Carbon;
 class Reservasi extends Model
 {
     protected $fillable = [
+        'id_pelanggan',
+        'id_meja',
+        'id_pegawai',
         'kode_qr',
         'tanggal_kunjungan',
         'jam_kunjungan',
-        'sesi'
+        'sesi',
+        'status_hapus',
     ];
 
     public function getCreatedAtAttribute(){

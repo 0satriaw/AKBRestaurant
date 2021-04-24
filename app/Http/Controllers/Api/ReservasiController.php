@@ -8,11 +8,19 @@ use Illuminate\Validation\Rule;
 use Validator;
 use App\Reservasi;
 use App\Meja;
+use App\Pelanggan;
+use App\User;
+use DB;
 
 class ReservasiController extends Controller
 {
     public function index(){
-        $reservasi = Reservasi::all();
+        $reservasi = DB::table('reservasis')
+        ->join('mejas', 'reservasis.id_meja', '=', 'mejas.id')
+        ->join('pelanggans','reservasis.id_pelanggan','=','pelanggans.id')
+        ->join('users','reservasis.id_pegawai','=','users.id')
+        ->select('users.nama', 'mejas.nomor_meja','pelanggans.nama_pelanggan','reservasis.*')->where('reservasis.status_hapus','=',0)
+        ->get();
 
         if(count($reservasi)>0){
                 return response([
@@ -45,20 +53,8 @@ class ReservasiController extends Controller
         ],404);
     }
 
-    //store reservasi belom samsek!!!
     public function store(Request $request){
         $storeData = $request->all();
-        $id_meja = $storeData['id_meja'];
-        $todayDate = date('Y-m-d');
-
-        // return
-
-        // if($todayDate==$storeData['tanggal_kunjungan']){
-        //     $meja = Bahan::where(['id', $id_meja],
-        //     ['status','=','Tersedia'])->first();
-        // }else{
-        //     $reservasi =
-        // }
 
 
         $validate = Validator::make($storeData,[
@@ -66,13 +62,23 @@ class ReservasiController extends Controller
             'id_meja' => 'required|numeric',
             'id_pegawai' => 'required|numeric',
             'kode_qr'=>'required',
-            'tanggal_kunjungan'=>'required|date_format:Y-m-d|after_or_equal:'.$todayDate,
-            'jam_kunjungan'=>'required|date_format:G:i',
+            'tanggal_kunjungan'=>'required|date_format:Y-m-d',
+            'jam_kunjungan'=>'required|date_format:H:i:s',
             'sesi'=>'required|numeric'
         ]);
 
+
+
         if($validate->fails())
             return response(['message'=> $validate->errors()],400);
+
+
+        $req = array(
+                'status' => 'Tidak Tersedia',
+              );
+        if($storeData['sesi']==0){
+            app(MejaController::class)->updateKetersediaan($req,$storeData['id_meja']);
+        }
 
         $reservasi = Reservasi::create($storeData);
         return response([
@@ -115,16 +121,39 @@ class ReservasiController extends Controller
 
         $updateData = $request->all();
         $validate = Validator::make($updateData,[
-            'status' => 'required|max:255',
-            'nomor_meja' => 'required|numeric',
+            'id_meja' => 'required|numeric',
+            'id_pegawai' => 'required|numeric',
+            'kode_qr'=>'required',
+            'tanggal_kunjungan'=>'required|date_format:Y-m-d',
+            'jam_kunjungan'=>'required|date_format:H:i:s',
+            'sesi'=>'required|numeric'
         ]);
+
 
         if($validate->fails())
             return response(['message'=> $validate->errors()],400);
 
 
-            $reservasi->status =  $updateData['status'];
-            $reservasi->nomor_meja = $updateData['nomor_meja'];
+            if($updateData['sesi']!=0&&$reservasi->sesi==0){
+                $req = array(
+                    'status' => 'Tersedia',
+                );
+                app(MejaController::class)->updateKetersediaan($req,$reservasi->id_meja);
+            }
+            if($updateData['sesi']==0&&$reservasi->sesi!=0){
+                $req = array(
+                    'status' => 'Tidak Tersedia',
+                );
+                app(MejaController::class)->updateKetersediaan($req,$reservasi->id_meja);
+            }
+            $reservasi->id_meja =  $updateData['id_meja'];
+            $reservasi->id_pegawai = $updateData['id_pegawai'];
+            $reservasi->kode_qr = $updateData['kode_qr'];
+            $reservasi->tanggal_kunjungan = $updateData['tanggal_kunjungan'];
+            $reservasi->jam_kunjungan = $updateData['jam_kunjungan'];
+            $reservasi->sesi = $updateData['sesi'];
+
+
 
         if($reservasi->save()){
             return response([
@@ -157,6 +186,13 @@ class ReservasiController extends Controller
             return response(['message'=> $validate->errors()],400);
 
             $reservasi->status_hapus = $updateData['status_hapus'];
+
+        $req = array(
+                'status' => 'Tersedia',
+              );
+        if($reservasi['sesi']==0){
+            app(MejaController::class)->updateKetersediaan($req,$reservasi['id_meja']);
+        }
 
         if($reservasi->save()){
             return response([

@@ -48,7 +48,7 @@ class BahanController extends Controller
     public function store(Request $request){
         $storeData = $request->all();
         $validate = Validator::make($storeData,[
-            'nama_bahan' => 'required|max:255',
+            'nama_bahan' => 'required|max:255|unique:bahans',
             'stok' => 'required|numeric',
             'satuan' => 'required',
             'tipe_bahan' => 'required',
@@ -98,7 +98,7 @@ class BahanController extends Controller
 
         $updateData = $request->all();
         $validate = Validator::make($updateData,[
-            'nama_bahan' => 'required|max:255',
+            'nama_bahan' => ['max:255',Rule::unique('bahans')->ignore($bahan)],
             'stok' => 'required|numeric',
             'satuan' => 'required',
             'tipe_bahan' => 'required',

@@ -29,6 +29,7 @@ class CreateReservasisTable extends Migration
             $table->date('tanggal_kunjungan');
             $table->time('jam_kunjungan');
             $table->integer('sesi');
+            $table->integer('status_hapus');
             $table->timestamps();
         });
     }

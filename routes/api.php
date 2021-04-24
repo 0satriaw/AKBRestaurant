@@ -90,4 +90,11 @@ Route::group(['middleware'=>'auth:api'],function(){
     Route::delete('menu/{id}','Api\MenuController@destroy');
     Route::post('menu/gambar/{id}', 'Api\MenuController@uploadGambar');
 
+    Route::get('reservasi','Api\ReservasiController@index');
+    Route::get('reservasi/{id}','Api\ReservasiController@show');
+    Route::post('reservasi','Api\ReservasiController@store');
+    Route::put('reservasi/{id}','Api\ReservasiController@update');
+    Route::put('dreservasi/{id}','Api\ReservasiController@sDestroy');
+    Route::delete('reservasi/{id}','Api\ReservasiController@destroy');
+
 });
