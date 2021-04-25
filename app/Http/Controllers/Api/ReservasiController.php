@@ -15,20 +15,44 @@ use DB;
 class ReservasiController extends Controller
 {
     public function index(){
+
+        DB::table('reservasis')->whereDate('tanggal_kunjungan', '<', date('Y-m-d'))->update(['status' => 1]);
+
         $reservasi = DB::table('reservasis')
         ->join('mejas', 'reservasis.id_meja', '=', 'mejas.id')
         ->join('pelanggans','reservasis.id_pelanggan','=','pelanggans.id')
         ->join('users','reservasis.id_pegawai','=','users.id')
         ->select('users.nama', 'mejas.nomor_meja','pelanggans.nama_pelanggan','reservasis.*')->where('reservasis.status_hapus','=',0)
+        ->orderBy('reservasis.status')
+        ->orderBy('reservasis.sesi')
         ->get();
 
-        if(count($reservasi)>0){
-                return response([
-                'message' =>'Retrieve All Success',
-                'data' =>$reservasi
-                ],200);
+        $reservasi2 = Reservasi::all()->where('status_hapus','=',0);
+
+        if(count($reservasi2)>0){
+            foreach($reservasi2 as $res) {
+               if($res->status==1&&$res->sesi==0){
+                    $req = array(
+                        'status' => 'Tersedia',
+                    );
+                    app(MejaController::class)->updateKetersediaan($req,$res->id_meja);
+                }
+                if($res->status==0&&$res->sesi==0){
+                    $req = array(
+                        'status' => 'Tidak Tersedia',
+                    );
+                    app(MejaController::class)->updateKetersediaan($req,$res->id_meja);
+                }
             }
 
+        }
+
+        if(count($reservasi)>0){
+            return response([
+            'message' =>'Retrieve All Success',
+            'data' =>$reservasi
+            ],200);
+        }
         return response([
             'message' => 'Empty',
             'data' =>null
@@ -64,7 +88,8 @@ class ReservasiController extends Controller
             'kode_qr'=>'required',
             'tanggal_kunjungan'=>'required|date_format:Y-m-d',
             'jam_kunjungan'=>'required|date_format:H:i:s',
-            'sesi'=>'required|numeric'
+            'sesi'=>'required|numeric',
+            'status'=>'required|numeric'
         ]);
 
 
@@ -126,7 +151,8 @@ class ReservasiController extends Controller
             'kode_qr'=>'required',
             'tanggal_kunjungan'=>'required|date_format:Y-m-d',
             'jam_kunjungan'=>'required|date_format:H:i:s',
-            'sesi'=>'required|numeric'
+            'sesi'=>'required|numeric',
+            'status'=>'required|numeric'
         ]);
 
 
@@ -145,6 +171,17 @@ class ReservasiController extends Controller
                     'status' => 'Tidak Tersedia',
                 );
                 app(MejaController::class)->updateKetersediaan($req,$reservasi->id_meja);
+            }
+
+            if($updateData['sesi']==0&&$reservasi->sesi==0){
+                $req = array(
+                    'status' => 'Tersedia',
+                );
+                app(MejaController::class)->updateKetersediaan($req,$reservasi->id_meja);
+                $req = array(
+                    'status' => 'Tidak Tersedia',
+                );
+                app(MejaController::class)->updateKetersediaan($req,$updateData['id_meja']);
             }
             $reservasi->id_meja =  $updateData['id_meja'];
             $reservasi->id_pegawai = $updateData['id_pegawai'];

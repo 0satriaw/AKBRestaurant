@@ -17,6 +17,7 @@ class Reservasi extends Model
         'jam_kunjungan',
         'sesi',
         'status_hapus',
+        'status'
     ];
 
     public function getCreatedAtAttribute(){

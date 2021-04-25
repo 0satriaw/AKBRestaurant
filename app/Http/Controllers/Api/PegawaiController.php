@@ -19,8 +19,9 @@ class PegawaiController extends Controller
     public function index(){
         $user = DB::table('users')
             ->join('jabatans', 'users.id_jabatan', '=', 'jabatans.id')
-            ->select('users.id','users.nama', 'users.email', 'users.jenis_kelamin','users.no_telp','jabatans.nama_jabatan','users.tanggal_bergabung','users.status')
-            ->orderBy('users.status')->get();
+            ->select('users.id','users.id_jabatan','users.nama', 'users.email', 'users.jenis_kelamin','users.no_telp','jabatans.nama_jabatan','users.tanggal_bergabung','users.status')
+            ->orderBy('users.status')
+            ->orderBy('jabatans.id')->get();
 
         if(count($user)>0){
                 return response([
@@ -71,11 +72,17 @@ class PegawaiController extends Controller
             'password'=>'required'
         ]);
 
+        $user = DB::table('users')->where('email','=',$loginData['email'])->first();
+
+        if($user->status==1){
+            return response(['message'=>'Pegawai sudah tidak aktif'],401);
+        }
+
         if($validate->fails())
             return response(['message'=>$validate->errors()],400);
 
         if(!Auth::attempt($loginData))
-            return response(['message'=>'Invalid Credentials'],401);
+            return response(['message'=>'Email atau Password salah'],401);
 
         $user = Auth::user();
         $token = $user->createToken('Authenticaton Token')->accessToken;
@@ -91,7 +98,7 @@ class PegawaiController extends Controller
         $request->user()->token()->revoke();
 
         return response()->json([
-            'message'=>'Succesfully logged out'
+            'message'=>'Logout berhasil'
         ]);
     }
 
@@ -100,7 +107,7 @@ class PegawaiController extends Controller
         $user = DB::table('users')
         ->join('jabatans', 'users.id_jabatan', '=', 'jabatans.id')
         ->select('users.id','users.nama', 'users.email','users.jenis_kelamin','users.no_telp','jabatans.nama_jabatan','users.tanggal_bergabung','users.status')->where('users.id',$id)
-        ->get();
+        ->get()->first();
 
         if(!is_null($user)){
             return response([

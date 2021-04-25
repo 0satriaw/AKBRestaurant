@@ -17,12 +17,11 @@ use Illuminate\Support\Facades\Route;
 Route::post('login','Api\PegawaiController@login');
 
 //coba
-Route::get('user','Api\PegawaiController@index');
 
 Route::group(['middleware'=>'auth:api'],function(){
 
     //USER
-
+    Route::get('user','Api\PegawaiController@index');
     Route::get('user/{id}','Api\PegawaiController@show');
     Route::post('user','Api\PegawaiController@register');
     Route::put('user/{id}','Api\PegawaiController@update');
