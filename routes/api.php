@@ -78,6 +78,7 @@ Route::group(['middleware'=>'auth:api'],function(){
     Route::get('stokmasuk/{id}','Api\StokMasukController@show');
     Route::post('stokmasuk','Api\StokMasukController@store');
     Route::put('stokmasuk/{id}','Api\StokMasukController@update');
+    Route::put('dstokmasuk/{id}','Api\StokMasukController@sDestroy');
     Route::delete('stokmasuk/{id}','Api\StokMasukController@destroy');
 
     //Menu
@@ -96,4 +97,13 @@ Route::group(['middleware'=>'auth:api'],function(){
     Route::put('dreservasi/{id}','Api\ReservasiController@sDestroy');
     Route::delete('reservasi/{id}','Api\ReservasiController@destroy');
 
+    Route::get('pesanan','Api\PesananController@index');
+    Route::get('pesanan/{id}','Api\PesananController@show');
+    Route::get('ppesanan/{id}','Api\PesananController@showOrder');
+    Route::put('upesanan/{id}','Api\PesananController@updateStatus');
+
+    Route::post('pesanan','Api\pesananController@store');
+    Route::put('pesanan/{id}','Api\PesananController@update');
+    Route::put('dpesanan/{id}','Api\PesananController@sDestroy');
+    Route::delete('pesanan/{id}','Api\PesananController@destroy');
 });

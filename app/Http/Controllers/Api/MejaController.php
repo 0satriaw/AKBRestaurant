@@ -58,7 +58,7 @@ class MejaController extends Controller
 
         $meja = Meja::create($storeData);
         return response([
-            'message' => 'Add Meja Success',
+            'message' => 'Data meja berhasil tambah',
             'data' => $meja,
         ],200);
     }
@@ -75,7 +75,7 @@ class MejaController extends Controller
 
             if($meja->delete()){
                 return response([
-                    'message' => 'Delete Meja Success',
+                    'message' => 'Data meja berhasil dihapus',
                     'data' =>$meja,
                 ],200);
             }
@@ -107,7 +107,7 @@ class MejaController extends Controller
 
         if($meja->save()){
             return response([
-                'message' => 'Update Meja Success',
+                'message' => 'Data meja berhasil diubah',
                 'data'=> $meja,
             ],200);
         }
@@ -138,7 +138,7 @@ class MejaController extends Controller
 
         if($meja->save()){
             return response([
-                'message' => 'Update Meja Success',
+                'message' => 'Data meja berhasil diubah',
                 'data'=> $meja,
             ],200);
         }
@@ -170,7 +170,7 @@ class MejaController extends Controller
 
         if($meja->save()){
             return response([
-                'message' => 'Delete Meja Success',
+                'message' => 'Data meja berhasil dihapus',
                 'data'=> $meja,
             ],200);
         }

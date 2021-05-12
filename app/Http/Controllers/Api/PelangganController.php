@@ -50,7 +50,7 @@ class PelangganController extends Controller
         $validate = Validator::make($storeData,[
             'nama_pelanggan' => 'required|max:255',
             'no_telp'=>'nullable|numeric|digits_between:10,13|starts_with:08',
-            'email'=>'nullable|email:rfc,dns|unique:users',
+            'email'=>'nullable|email:rfc,dns',
             'status_hapus' => 'required|numeric'
         ]);
 
@@ -59,7 +59,7 @@ class PelangganController extends Controller
 
         $pelanggan = Pelanggan::create($storeData);
         return response([
-            'message' => 'Add Pelanggan Success',
+            'message' => 'Data pelanggan berhasil ditambah',
             'data' => $pelanggan,
         ],200);
     }
@@ -76,7 +76,7 @@ class PelangganController extends Controller
 
             if($pelanggan->delete()){
                 return response([
-                    'message' => 'Delete Pelanggan Success',
+                    'message' => 'Data pelanggan berhasil dihapus',
                     'data' =>$pelanggan,
                 ],200);
             }
@@ -112,7 +112,7 @@ class PelangganController extends Controller
 
         if($pelanggan->save()){
             return response([
-                'message' => 'Update Pelanggan Success',
+                'message' => 'Data pelanggan berhasil diubah',
                 'data'=> $pelanggan,
             ],200);
         }
@@ -144,7 +144,7 @@ class PelangganController extends Controller
 
         if($pelanggan->save()){
             return response([
-                'message' => 'Delete Pelanggan Success',
+                'message' => 'Data pelanggan berhasil dihapus',
                 'data'=> $pelanggan,
             ],200);
         }

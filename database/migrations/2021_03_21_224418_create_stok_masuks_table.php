@@ -22,6 +22,7 @@ class CreateStokMasuksTable extends Migration
             $table->integer('jumlah');
             $table->double('biaya');
             $table->date('tanggal_masuk');
+            $table->integer('status_hapus');
             $table->timestamps();
         });
     }

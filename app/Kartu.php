@@ -10,7 +10,9 @@ class Kartu extends Model
 {
     protected $fillable = [
         'tipe_kartu',
-        'nomorkartu'
+        'nomorkartu',
+        'nama_pemilik',
+        'exp_date'
     ];
 
     public function getCreatedAtAttribute(){

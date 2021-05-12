@@ -9,6 +9,7 @@ use Carbon\Carbon;
 class Menu extends Model
 {
     protected $fillable = [
+        'id_bahan',
         'nama_menu',
         'deskripsi',
         'unit',

@@ -9,6 +9,7 @@ use Carbon\Carbon;
 class StokKeluar extends Model
 {
     protected $fillable = [
+        'id_bahan',
         'jumlah',
         'tanggal_keluar'
     ];

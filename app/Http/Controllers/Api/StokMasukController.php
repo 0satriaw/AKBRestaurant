@@ -16,7 +16,7 @@ class StokMasukController extends Controller
     public function index(){
         $stokmasuk = DB::table('stok_masuks')
             ->join('bahans', 'bahans.id', '=', 'stok_masuks.id_bahan')
-            ->select('stok_masuks.*','bahans.nama_bahan')
+            ->select('stok_masuks.*','bahans.nama_bahan')->where('stok_masuks.status_hapus','=',0)
             ->get();
 
         if(count($stokmasuk)>0){
@@ -63,13 +63,14 @@ class StokMasukController extends Controller
             'id_bahan'=>'required|numeric',
             'jumlah'=>'required|numeric',
             'biaya'=>'required|numeric',
-            'tanggal_masuk'=>'date|required'
+            'tanggal_masuk'=>'date|required',
+            'status_hapus'=>'required|numeric'
         ]);
 
         $bahan['stok'] = $bahan['stok'] + $storeData['jumlah'];
         $bahan->save();
         if($menu!=null){
-            $menu['stok'] = $bahan['stok']/$menu['serving_size'];
+            $menu['stok'] = intdiv($bahan['stok'],$menu['serving_size']);
             $menu->save();
         }
 
@@ -80,7 +81,7 @@ class StokMasukController extends Controller
         $stokmasuk = StokMasuk::create($storeData);
 
         return response([
-            'message'=>'Add Stok Masuk Success',
+            'message'=>'Data stok masuk berhasil ditambah',
             'data'=>$stokmasuk,
         ],200);
     }
@@ -107,7 +108,7 @@ class StokMasukController extends Controller
 
             if($stokmasuk->delete()){
                 return response([
-                    'message' => 'Delete Stok Masuk Success',
+                    'message' => 'Data stok masuk berhasil dihapus',
                     'data' =>$stokmasuk,
                 ],200);
             }
@@ -115,6 +116,50 @@ class StokMasukController extends Controller
                 'message' => 'Delete Stok Masuk Failed',
                 'data' => null,
             ],400);
+    }
+
+    public function sDestroy(Request $request, $id){
+        $stokmasuk = StokMasuk::find($id);
+        $id_bahan = $stokmasuk['id_bahan'];
+        if(is_null($stokmasuk)){
+            return response([
+                'message'=>'Stok Masuk Not Found',
+                'data'=>null
+            ],404);
+        }
+
+        $updateData = $request->all();
+        $validate = Validator::make($updateData,[
+            'status_hapus' => 'required|numeric',
+        ]);
+
+        if($validate->fails())
+            return response(['message'=> $validate->errors()],400);
+
+            $bahan = Bahan::where('id', $id_bahan)->first();
+            $menu = Menu::where('id_bahan', $id_bahan)->first();
+
+            $bahan['stok'] = $bahan['stok'] - $stokmasuk['jumlah'];
+            if($menu!=null){
+                $menu['stok'] = intdiv($bahan['stok'],$menu['serving_size']);
+                $menu->save();
+            }
+
+            $bahan->save();
+
+            $stokmasuk->status_hapus = $updateData['status_hapus'];
+
+        if($stokmasuk->save()){
+            return response([
+                'message' => 'Data stok masuk berhasil dihapus',
+                'data'=> $stokmasuk,
+            ],200);
+        }
+
+        return response([
+            'messsage'=>'Delete Bahan Failed',
+            'data'=>null,
+        ],400);
     }
 
     //update status ketersediaan//
@@ -135,7 +180,8 @@ class StokMasukController extends Controller
             'id_bahan'=>'required|numeric',
             'jumlah'=>'required|numeric',
             'biaya'=>'required|numeric',
-            'tanggal_masuk'=>'date|required'
+            'tanggal_masuk'=>'date|required',
+            'status_hapus'=>'required|numeric'
         ]);
 
         if($validate->fails())
@@ -181,7 +227,7 @@ class StokMasukController extends Controller
 
         if($stokmasuk->save()){
             return response([
-                'message' => 'Update Stok Masuk Success',
+                'message' => 'Data stok masuk berhasil diubah',
                 'data'=> $stokmasuk,
             ],200);
         }

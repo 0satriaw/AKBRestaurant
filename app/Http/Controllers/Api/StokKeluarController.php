@@ -15,7 +15,10 @@ class StokKeluarController extends Controller
 {
     //Semua Stok Keluar tanpa terkecuali
     public function index(){
-        $stokkeluar = StokKeluar::all();
+        $stokkeluar = DB::table('stok_keluars')
+        ->join('bahans', 'bahans.id', '=', 'stok_keluars.id_bahan')
+        ->select('stok_keluars.*','bahans.nama_bahan')
+        ->get();
 
         if(count($stokkeluar)>0){
             return response([
@@ -73,10 +76,12 @@ class StokKeluarController extends Controller
         ]);
 
         $bahan['stok'] = $bahan['stok'] - $storeData['jumlah'];
-        $menu['stok'] = $bahan['stok']/$menu['serving_size'];
-
         $bahan->save();
-        $menu->save();
+        if($menu!=null){
+            $menu['stok'] = $bahan['stok']/$menu['serving_size'];
+            $menu->save();
+        }
+
 
         if($validate->fails()){
             return response(['message'=>$validate->errors()],400);
@@ -85,7 +90,7 @@ class StokKeluarController extends Controller
         $stokkeluar = StokKeluar::create($storeData);
 
         return response([
-            'message'=>'Add StokKeluar Success',
+            'message'=>'Tambah Data Stok Keluar sukses',
             'data'=>$stokkeluar,
         ],200);
     }

@@ -12,7 +12,8 @@ class StokMasuk extends Model
         'id_bahan',
         'jumlah',
         'tanggal_masuk',
-        'biaya'
+        'biaya',
+        'status_hapus'
     ];
 
     public function getCreatedAtAttribute(){

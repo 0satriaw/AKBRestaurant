@@ -60,7 +60,7 @@ class PegawaiController extends Controller
         $user = User::create($registrationData);
 
         return response([
-            'message'=>'Register Success',
+            'message'=>'Pegawai berhasil ditambahkan',
             'user'=>$user,
         ],200);
     }
@@ -157,13 +157,13 @@ class PegawaiController extends Controller
 
         if($user->save()){
             return response([
-                'message'=>'Update User Success',
+                'message'=>'Data pegawai berhasil diubah',
                 'data'=>$user,
             ],200);
         }//return user yg telah diedit
 
         return response([
-            'message'=>'Update User Failed',
+            'message'=>'Data pegawai gagal diubah',
             'data'=>null,
         ],404);//return message saat user gagal diedit
     }
@@ -191,13 +191,13 @@ class PegawaiController extends Controller
 
         if($user->save()){
             return response([
-                'message'=>'Delete User Success',
+                'message'=>'Pegawai dinonaktifkan',
                 'data'=>$user,
             ],200);
         }//return user yg telah diedit
 
         return response([
-            'message'=>'Delete User Failed',
+            'message'=>'Gagal menonaktifkan pegawai',
             'data'=>null,
         ],404);//return message saat user gagal diedit
     }
@@ -224,12 +224,12 @@ class PegawaiController extends Controller
         }else{
                 if((Hash::check(request('password'), Auth::user()->password))==false){
                     return response([
-                        'message'=>'Please check your old password ',
+                        'message'=>'Silahkan periksa password lama anda',
                         'data'=>null,
                     ],404);//return message saat user gagal diedit
                 }else if($updateData['newPassword'] != $updateData['confirmPassword']){
                     return response([
-                        'message'=>'new password doesnt match',
+                        'message'=>'Password baru dan konfirmasi password harus sama',
                         'data'=>null,
                     ],404);//return message saat user gagal diedit
                 }else{
@@ -239,7 +239,7 @@ class PegawaiController extends Controller
 
         if($user->save()){
             return response([
-                'message'=>'Update User Success',
+                'message'=>'Password berhasil diubah',
                 'data'=>$user,
             ],200);
         }//return user yg telah diedit

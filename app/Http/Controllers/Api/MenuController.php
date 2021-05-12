@@ -7,12 +7,13 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Validator;
 use App\Menu;
+use App\Bahan;
 
 class MenuController extends Controller
 {
     // =======================================MENU BELUM ADA ID BAHAN============================================
     public function index(){
-        $menu = Menu::all();
+        $menu = Menu::all()->where('status_hapus','=',0);
 
         if(count($menu)>0){
                 return response([
@@ -50,7 +51,7 @@ class MenuController extends Controller
     public function store(Request $request){
         $storeData = $request->all();
         $validate = Validator::make($storeData,[
-            'nama_menu' => 'required|max:60|unique:menu',
+            'nama_menu' => 'required|max:60|unique:menus',
             'id_bahan'=>'required|numeric',
             'deskripsi' => 'required|max:255',
             'unit' => 'required|max:255',
@@ -68,7 +69,9 @@ class MenuController extends Controller
         if($files = $request->file('gambar')){
         $imageName = $files->getClientOriginalName();
         $request->gambar->move(public_path('images'),$imageName);
+
         $menu = Menu::create([
+            'id_bahan'=>$request->id_bahan,
             'nama_menu'=>$request->nama_menu,
             'deskripsi'=>$request->deskripsi,
             'unit'=>$request->unit,
@@ -83,6 +86,11 @@ class MenuController extends Controller
             'message'=>'Add Menu Success',
             'data'=>$menu
         ],200);
+        } else{
+            return response([
+                'message' => 'Gambar Menu tidak boleh kosong',
+                'data' => null,
+            ],400);
         }
     }
 
@@ -119,9 +127,11 @@ class MenuController extends Controller
             ],404);
         }
 
+
         $updateData = $request->all();
         $validate = Validator::make($updateData,[
-            'nama_menu' => 'required|max:60|unique:menu',
+            'id_bahan'=>'numeric|numeric',
+            'nama_menu' => ['max:255',Rule::unique('menus')->ignore($menu)],
             'deskripsi' => 'required|max:255',
             'unit' => 'required|max:255',
             'tipe' => 'required|max:255',
@@ -131,9 +141,9 @@ class MenuController extends Controller
             'status_hapus' => 'required|numeric'
         ]);
 
+
         if($validate->fails())
             return response(['message'=> $validate->errors()],400);
-
 
             $menu->nama_menu =  $updateData['nama_menu'];
             $menu->deskripsi = $updateData['deskripsi'];
@@ -143,6 +153,7 @@ class MenuController extends Controller
             $menu->harga = $updateData['harga'];
             $menu->serving_size = $updateData['serving_size'];
             $menu->status_hapus = $updateData['status_hapus'];
+
 
         if($menu->save()){
             return response([
@@ -180,8 +191,6 @@ class MenuController extends Controller
                 'data'=> null,
             ],400);
         }
-        // $imageName = $files->getClientOriginalName();
-        // $request->gambar_product->move(public_path('images'),$imageName);
 
         $image = public_path().'/images/';
         $file -> move($image, $file->getClientOriginalName());

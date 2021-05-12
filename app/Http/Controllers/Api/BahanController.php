@@ -60,7 +60,7 @@ class BahanController extends Controller
 
         $bahan = Bahan::create($storeData);
         return response([
-            'message' => 'Add Bahan Success',
+            'message' => 'Data bahan berhasil ditambahkan',
             'data' => $bahan,
         ],200);
     }
@@ -77,7 +77,7 @@ class BahanController extends Controller
 
             if($bahan->delete()){
                 return response([
-                    'message' => 'Delete Bahan Success',
+                    'message' => 'Data bahan berhasil dihapus',
                     'data' =>$bahan,
                 ],200);
             }
@@ -115,7 +115,7 @@ class BahanController extends Controller
 
         if($bahan->save()){
             return response([
-                'message' => 'Update Bahan Success',
+                'message' => 'Data Bahan berhasil diubah',
                 'data'=> $bahan,
             ],200);
         }
@@ -147,7 +147,7 @@ class BahanController extends Controller
 
         if($bahan->save()){
             return response([
-                'message' => 'Delete Bahan Success',
+                'message' => 'Data Bahan berhasil dihapus',
                 'data'=> $bahan,
             ],200);
         }
