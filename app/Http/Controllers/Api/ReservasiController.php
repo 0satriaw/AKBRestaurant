@@ -9,7 +9,9 @@ use Validator;
 use App\Reservasi;
 use App\Meja;
 use App\Pelanggan;
+use App\Transaksi;
 use App\User;
+use Illuminate\Support\Str;
 use DB;
 
 class ReservasiController extends Controller
@@ -70,6 +72,56 @@ class ReservasiController extends Controller
             ],200);
 
         }
+
+        return response([
+            'message' => 'Reservasi Not Found',
+            'data' => null
+        ],404);
+    }
+
+    public function scanQR (Request $request){
+        $req = $request->all();
+        $reservasi=Reservasi::where('kode_qr','=',$req['kode_qr'])->first();
+
+        if(!is_null($reservasi)){
+            $alltrans = Transaksi::whereDate('tanggal_transaksi', '=', date('Y-m-d'))->get();
+            $transaksi = Transaksi::where('id_reservasi','=',$reservasi['id'])->first();
+
+            $nomor_nota = count($alltrans);
+
+            if($transaksi===null){
+                $storeData = array(
+                    "id_reservasi" => $reservasi['id'],
+                    "id_pegawai" => $reservasi['id_pegawai'],
+                    "nomor_nota" =>$nomor_nota+1,
+                    "total_transaksi" => 0,
+                    "tanggal_transaksi" =>date('Y-m-d H:i:s'),
+                    "kode_transaksi" => Str::random(8),
+                    "status_transaksi" => 0,
+                  );
+
+                $validate = Validator::make($storeData,[
+                    'id_reservasi' => 'required|numeric',
+                    'id_pegawai' => 'required|numeric',
+                    'total_transaksi' => 'required|numeric',
+                    'tanggal_transaksi' => 'required|date_format:Y-m-d H:i:s',
+                    'kode_transaksi' => 'required',
+                    'status_transaksi' => 'required|numeric',
+                ]);
+
+                if($validate->fails())
+                    return response(['message'=> $validate->errors()],400);
+
+                $transaksi = Transaksi::create($storeData);
+            }
+
+            return response([
+                'message'  => 'Scan QR Berhasil',
+                'data' => $transaksi
+            ],200);
+
+        }
+
 
         return response([
             'message' => 'Reservasi Not Found',

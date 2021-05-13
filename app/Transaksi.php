@@ -9,10 +9,15 @@ use Carbon\Carbon;
 class Transaksi extends Model
 {
     protected $fillable = [
+        'id_reservasi',
+        'id_kartu',
+        'id_pegawai',
+        'metode_pembayaran',
         'total_transaksi',
         'tanggal_transaksi',
         'status_transaksi',
-        'kode_transaksi'
+        'kode_transaksi',
+        'nomor_nota',
     ];
 
     public function getCreatedAtAttribute(){

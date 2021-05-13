@@ -25,6 +25,7 @@ class CreateTransaksisTable extends Migration
             $table->unsignedBigInteger('id_pegawai');
             $table->foreign('id_pegawai')->references('id')->on('users');
 
+            $table->integer('nomor_nota');
             $table->double('total_transaksi');
             $table->string('metode_pembayaran')->nullable();
             $table->datetime('tanggal_transaksi');

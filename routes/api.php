@@ -15,8 +15,13 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('login','Api\PegawaiController@login');
-
 //coba
+//Reservasi
+Route::post('scanqr','Api\ReservasiController@scanQR');
+//Menu
+Route::get('menu','Api\MenuController@index');
+//Pesanan
+Route::get('ppesanan/{id}','Api\PesananController@showOrder');
 
 Route::group(['middleware'=>'auth:api'],function(){
 
@@ -82,7 +87,7 @@ Route::group(['middleware'=>'auth:api'],function(){
     Route::delete('stokmasuk/{id}','Api\StokMasukController@destroy');
 
     //Menu
-    Route::get('menu','Api\MenuController@index');
+
     Route::get('menu/{id}','Api\MenuController@show');
     Route::post('menu','Api\MenuController@store');
     Route::put('menu/{id}','Api\MenuController@update');
@@ -90,6 +95,7 @@ Route::group(['middleware'=>'auth:api'],function(){
     Route::delete('menu/{id}','Api\MenuController@destroy');
     Route::post('menu/gambar/{id}', 'Api\MenuController@uploadGambar');
 
+    //Reservasi
     Route::get('reservasi','Api\ReservasiController@index');
     Route::get('reservasi/{id}','Api\ReservasiController@show');
     Route::post('reservasi','Api\ReservasiController@store');
@@ -97,13 +103,20 @@ Route::group(['middleware'=>'auth:api'],function(){
     Route::put('dreservasi/{id}','Api\ReservasiController@sDestroy');
     Route::delete('reservasi/{id}','Api\ReservasiController@destroy');
 
+    //Pesanan
     Route::get('pesanan','Api\PesananController@index');
     Route::get('pesanan/{id}','Api\PesananController@show');
-    Route::get('ppesanan/{id}','Api\PesananController@showOrder');
+
     Route::put('upesanan/{id}','Api\PesananController@updateStatus');
 
     Route::post('pesanan','Api\pesananController@store');
     Route::put('pesanan/{id}','Api\PesananController@update');
     Route::put('dpesanan/{id}','Api\PesananController@sDestroy');
     Route::delete('pesanan/{id}','Api\PesananController@destroy');
+
+    //Transaksi
+    Route::get('transaksi/{id}','Api\TransaksiController@show');
+    Route::get('transaksi','Api\TransaksiController@index');
+    Route::put('menu/{id}','Api\TransaksiController@update');
+    Route::get('transaksil','Api\TransaksiController@indexlunas');
 });
