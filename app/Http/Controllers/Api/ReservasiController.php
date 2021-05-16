@@ -79,9 +79,8 @@ class ReservasiController extends Controller
         ],404);
     }
 
-    public function scanQR (Request $request){
-        $req = $request->all();
-        $reservasi=Reservasi::where('kode_qr','=',$req['kode_qr'])->first();
+    public function scanQR ($req){
+        $reservasi=Reservasi::where('kode_qr','=',$req)->first();
 
         if(!is_null($reservasi)){
             $alltrans = Transaksi::whereDate('tanggal_transaksi', '=', date('Y-m-d'))->get();
@@ -126,7 +125,7 @@ class ReservasiController extends Controller
         return response([
             'message' => 'Reservasi Not Found',
             'data' => null
-        ],404);
+        ],200);
     }
 
     public function store(Request $request){

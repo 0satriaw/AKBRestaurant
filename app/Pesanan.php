@@ -9,6 +9,9 @@ use Carbon\Carbon;
 class Pesanan extends Model
 {
     protected $fillable = [
+        'id_reservasi',
+        'id_transaksi',
+        'id_menu',
         'status_pesanan',
         'jumlah',
         'total_harga'

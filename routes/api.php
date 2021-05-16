@@ -17,11 +17,17 @@ use Illuminate\Support\Facades\Route;
 Route::post('login','Api\PegawaiController@login');
 //coba
 //Reservasi
-Route::post('scanqr','Api\ReservasiController@scanQR');
+Route::get('scanqr/{req}','Api\ReservasiController@scanQR');
 //Menu
 Route::get('menu','Api\MenuController@index');
 //Pesanan
-Route::get('ppesanan/{id}','Api\PesananController@showOrder');
+Route::get('showorder/{id}','Api\PesananController@showOrder');
+Route::get('showpesanan/{id}','Api\PesananController@showPesanan');
+Route::get('pesanan/{id}','Api\PesananController@show');
+Route::put('upesanan/{id}','Api\PesananController@updateStatus');
+Route::post('pesanan','Api\PesananController@store');
+Route::put('updatecart/{id}','Api\PesananController@updateCart');
+Route::put('updatepesanan/{id}','Api\PesananController@updatePesanan');
 
 Route::group(['middleware'=>'auth:api'],function(){
 
@@ -105,9 +111,7 @@ Route::group(['middleware'=>'auth:api'],function(){
 
     //Pesanan
     Route::get('pesanan','Api\PesananController@index');
-    Route::get('pesanan/{id}','Api\PesananController@show');
 
-    Route::put('upesanan/{id}','Api\PesananController@updateStatus');
 
     Route::post('pesanan','Api\pesananController@store');
     Route::put('pesanan/{id}','Api\PesananController@update');
