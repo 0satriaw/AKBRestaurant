@@ -80,7 +80,7 @@ class ReservasiController extends Controller
     }
 
     public function scanQR ($req){
-        $reservasi=Reservasi::where('kode_qr','=',$req)->first();
+        $reservasi=Reservasi::where([['kode_qr','=',$req],['status',0]])->first();
 
         if(!is_null($reservasi)){
             $alltrans = Transaksi::whereDate('tanggal_transaksi', '=', date('Y-m-d'))->get();
@@ -121,7 +121,6 @@ class ReservasiController extends Controller
 
         }
 
-
         return response([
             'message' => 'Reservasi Not Found',
             'data' => null
@@ -161,6 +160,40 @@ class ReservasiController extends Controller
             'message' => 'Add Reservasi Success',
             'data' => $reservasi,
         ],200);
+    }
+
+    public function endReservasi(Request $request, $id){
+        $reservasi = Reservasi::find($id);
+        if(is_null($reservasi)){
+            return response([
+                'message'=>'Tidak ditemukan',
+                'data'=>null
+            ],404);
+        }
+        $updateData = $request->all();
+
+        $transaksi= Transaksi::where('id_reservasi',$id)->update(['total_transaksi' => $updateData['total_transaksi']]);
+
+        $validate = Validator::make($updateData,[
+            'status' => 'required|numeric',
+        ]);
+
+        if($validate->fails())
+            return response(['message'=> $validate->errors()],400);
+
+            $reservasi->status = $updateData['status'];
+
+        if($pesanan->save()){
+            return response([
+                'message' => 'Reservasi berhasil diakhir',
+                'data'=> $reservasi,
+            ],200);
+        }
+
+        return response([
+            'messsage'=>'Reservasi gagal dihapus',
+            'data'=>null,
+        ],400);
     }
 
     public function destroy($id){

@@ -8,9 +8,11 @@ use Validator;
 use App\Reservasi;
 use App\Pelanggan;
 use App\Pesanan;
+use App\StokKeluar;
 use App\Menu;
 use App\User;
 use DB;
+use App\Bahan;
 
 class PesananController extends Controller
 {
@@ -180,12 +182,28 @@ class PesananController extends Controller
             'jumlah'=>'required|numeric',
             'total_harga'=>'required|numeric'
         ]);
-        $menu['stok'] = $menu['stok'] - $storeData['jumlah'];
-        $menu->save();
 
         if($validate->fails()){
             return response(['message'=>$validate->errors()],400);
         }
+
+
+        $menu['stok'] = $menu['stok'] - $storeData['jumlah'];
+        $stok = $storeData['jumlah']*$menu['serving_size'];
+        $bahan = Bahan::where('id',$menu['id_bahan'])->first();
+        $bahan['stok'] = $bahan['stok'] -$stok;
+
+        $bahan->save();
+        $menu->save();
+
+        $req = array(
+            'id_bahan'=>$bahan['id'],
+            'jumlah'=>$stok,
+            'tanggal_keluar'=>date('Y-m-d'),
+            'status'=>1,
+          );
+
+        $stokkeluar = StokKeluar::create($req);
 
         $pesanans = Pesanan::create($storeData);
 
@@ -208,6 +226,13 @@ class PesananController extends Controller
             ],404);
         }else{
             $menu['stok'] = $menu['stok'] + $pesanans['jumlah'];
+            $bahan = Bahan::where('id',$menu['id_bahan'])->first();
+            $stok = $pesanans['jumlah']*$menu['serving_size'];
+            $bahan['stok'] = $bahan['stok'] +$stok;
+
+            $stokkeluar = StokKeluar::where([['id_bahan',$menu['id_bahan']],['jumlah',$stok]])->latest()->first();
+            $stokkeluar->delete();
+            $bahan->save();
             $menu->save();
         }
 
@@ -238,7 +263,7 @@ class PesananController extends Controller
         $menu = Menu::where('id', $id_menu)->first();
         if($menu['stok']<$storeData['jumlah']){
             return response([
-                'message'=>'Stock Pesanan tidak cukup',
+                'message'=>'Stok Menu tidak cukup',
                 'data'=>null,
             ],200);
         }
@@ -274,6 +299,9 @@ class PesananController extends Controller
         if($validate->fails())
             return response(['message'=>$validate->errors()],404);//return error invalid input
 
+
+        $stokkeluar = StokKeluar::where([
+            ['id_bahan',$menu['id_bahan']],['jumlah',$pesanans['jumlah']*$menu['serving_size']]])->latest()->first();
         $qty = $pesanans['jumlah'] + $storeData['jumlah'];
         $harga_menu = $pesanans['total_harga']/$pesanans['jumlah'];
         $totalHarga = $qty * $harga_menu;
@@ -282,6 +310,15 @@ class PesananController extends Controller
         $pesanans['total_harga'] = $totalHarga;
 
         $menu['stok'] = $menu['stok'] - $storeData['jumlah'];
+        $stok = $storeData['jumlah']*$menu['serving_size'];
+
+        $bahan = Bahan::where('id',$menu['id_bahan'])->first();
+        $bahan['stok'] = $bahan['stok']-$stok;
+
+        $stokkeluar['jumlah'] = $stokkeluar['jumlah'] + $stok;
+
+        $stokkeluar->save();
+        $bahan->save();
         $menu->save();
 
 
@@ -339,9 +376,17 @@ class PesananController extends Controller
         if($validate->fails())
             return response(['message'=>$validate->errors()],400);//return error invalid input
 
+
+        $bahan = Bahan::where('id',$menu['id_bahan'])->first();
+        $stokkeluar = StokKeluar::where('id_bahan',$menu['id_bahan'])->latest()->first();
+
+        $bahan['stok'] = $bahan['stok']+($menu['serving_size']*$pesanans['jumlah']-($menu['serving_size']*$storeData['jumlah']));
+        $stokkeluar['jumlah'] = $stokkeluar['jumlah'] - ($menu['serving_size']*$pesanans['jumlah'])+($menu['serving_size']*$storeData['jumlah']);
         $menu['stok'] = $menu['stok'] + $pesanans['jumlah'] - $storeData['jumlah'];
         $menu->save();
-        
+
+        $stokkeluar->save();
+        $bahan->save();
         $pesanans['jumlah'] = $storeData['jumlah'];
         $pesanans['total_harga'] = $menu['harga']*$storeData['jumlah'];
 

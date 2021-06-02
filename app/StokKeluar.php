@@ -11,7 +11,8 @@ class StokKeluar extends Model
     protected $fillable = [
         'id_bahan',
         'jumlah',
-        'tanggal_keluar'
+        'tanggal_keluar',
+        'status'
     ];
 
     public function getCreatedAtAttribute(){

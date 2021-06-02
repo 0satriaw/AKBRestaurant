@@ -28,6 +28,10 @@ Route::put('upesanan/{id}','Api\PesananController@updateStatus');
 Route::post('pesanan','Api\PesananController@store');
 Route::put('updatecart/{id}','Api\PesananController@updateCart');
 Route::put('updatepesanan/{id}','Api\PesananController@updatePesanan');
+route::put('endreservasi/{id}','Api\ReservasiController@endReservasi');
+Route::delete('pesanan/{id}','Api\PesananController@destroy');
+Route::put('pesanan/{id}','Api\PesananController@update');
+Route::put('dpesanan/{id}','Api\PesananController@sDestroy');
 
 Route::group(['middleware'=>'auth:api'],function(){
 
@@ -57,7 +61,8 @@ Route::group(['middleware'=>'auth:api'],function(){
     Route::delete('jabatan/{id}','Api\JabatanController@destroy');
 
     //Kartu
-    Route::get('kartu','Api\KartuController@index');
+    Route::get('kartuc','Api\KartuController@indexC');
+    Route::get('kartud','Api\KartuController@indexD');
     Route::get('kartu/{id}','Api\KartuController@show');
     Route::post('kartu','Api\KartuController@store');
     Route::put('kartu/{id}','Api\KartuController@update');
@@ -113,14 +118,24 @@ Route::group(['middleware'=>'auth:api'],function(){
     Route::get('pesanan','Api\PesananController@index');
 
 
-    Route::post('pesanan','Api\pesananController@store');
-    Route::put('pesanan/{id}','Api\PesananController@update');
-    Route::put('dpesanan/{id}','Api\PesananController@sDestroy');
-    Route::delete('pesanan/{id}','Api\PesananController@destroy');
+
 
     //Transaksi
     Route::get('transaksi/{id}','Api\TransaksiController@show');
     Route::get('transaksi','Api\TransaksiController@index');
-    Route::put('menu/{id}','Api\TransaksiController@update');
+    Route::put('transaksi/{id}','Api\TransaksiController@update');
     Route::get('transaksil','Api\TransaksiController@indexlunas');
+    ///MULAI DARI SINI COPAS
+    Route::get('gettahun','Api\TransaksiController@getTahun');
+    Route::get('getnamamenu','Api\TransaksiController@getNamaMenu');
+    Route::get('gettahunkeluar','Api\TransaksiController@getTahunKeluar');
+    Route::get('cetakstruk/{id}','Api\TransaksiController@cetakStruk');
+    Route::get('pendperbulan/{tahun}','Api\TransaksiController@laporanPendapatanPerbulan');
+    Route::get('pendpertahun/{tahun1}/{tahun2}','Api\TransaksiController@laporanPendapatanPertahun');
+    Route::get('pengperbulan/{tahun}','Api\TransaksiController@laporanPengeluaranPerbulan');
+    Route::get('pengpertahun/{tahun1}/{tahun2}','Api\TransaksiController@laporanPengeluaranPertahun');
+    Route::get('lappenjualan/{dt}','Api\TransaksiController@laporanPenjualan');
+    Route::get('lappenjualanpertahun/{dt}','Api\TransaksiController@laporanPenjualanPertahun');
+    Route::get('laporanstok/{tgl1}/{tgl2}','Api\TransaksiController@laporanStok');
+    Route::get('laporanstokperbulan/{tgl1}/{nama_menu}','Api\TransaksiController@laporanStokPerbulan');
 });

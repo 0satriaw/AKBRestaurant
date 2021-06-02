@@ -18,6 +18,7 @@ class CreateStokKeluarsTable extends Migration
 
             $table->unsignedBigInteger('id_bahan');
             $table->foreign('id_bahan')->references('id')->on('bahans');
+            $table->integer('status');
 
             $table->integer('jumlah');
             $table->date('tanggal_keluar');

@@ -73,6 +73,7 @@ class StokKeluarController extends Controller
             'id_bahan'=>'required|numeric',
             'jumlah'=>'required|numeric',
             'tanggal_keluar'=>'date|required',
+            'status'=>'required|numeric'
         ]);
 
         $bahan['stok'] = $bahan['stok'] - $storeData['jumlah'];
@@ -94,5 +95,4 @@ class StokKeluarController extends Controller
             'data'=>$stokkeluar,
         ],200);
     }
-
 }
