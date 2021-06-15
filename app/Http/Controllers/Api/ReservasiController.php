@@ -183,7 +183,7 @@ class ReservasiController extends Controller
 
             $reservasi->status = $updateData['status'];
 
-        if($pesanan->save()){
+        if($reservasi->save()){
             return response([
                 'message' => 'Reservasi berhasil diakhir',
                 'data'=> $reservasi,

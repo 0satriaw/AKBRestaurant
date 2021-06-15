@@ -83,7 +83,7 @@ class TransaksiController extends Controller
 
 
     public function update(Request $request, $id){
-        $transaksi = Transaksi::where('id_reservasi',$id)->first();
+        $transaksi = Transaksi::where('id',$id)->first();
         // return $transaksi;
 
         if(is_null($transaksi)){
@@ -159,7 +159,7 @@ class TransaksiController extends Controller
 
 
 
-    ///MULAI DARI SINI COPAS
+    ///MULAI DARI SINI COPAS KE API CODE 3
 
     public function getTahun(){
         $transaksi = DB::table('transaksis')

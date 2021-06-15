@@ -125,7 +125,8 @@ Route::group(['middleware'=>'auth:api'],function(){
     Route::get('transaksi','Api\TransaksiController@index');
     Route::put('transaksi/{id}','Api\TransaksiController@update');
     Route::get('transaksil','Api\TransaksiController@indexlunas');
-    ///MULAI DARI SINI COPAS
+
+    ///MULAI DARI SINI COPAS KE API CODE 3
     Route::get('gettahun','Api\TransaksiController@getTahun');
     Route::get('getnamamenu','Api\TransaksiController@getNamaMenu');
     Route::get('gettahunkeluar','Api\TransaksiController@getTahunKeluar');
